@@ -96,6 +96,7 @@ users)
 
 ## Internal
   * Fix a rare potential GC corruption in `OpamStubs.enumRegistry` on Windows [#6882 @kit-ty-kate]
+  * Fix a rare potential GC corruption in `OpamStubs.uname` [#6880 @avsm @kit-ty-kate @andrew]
 
 ## Internal: Unix
 
