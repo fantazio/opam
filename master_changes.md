@@ -61,12 +61,8 @@ users)
 ## Env
 
 ## Opamfile
-  * Filter fields in .install files containing destinations with `..` or absolute filepaths as parse errors [#6897 @kit-ty-kate]
 
 ## External dependencies
-  * Restore the distribution detection on Gentoo [#6886 @kit-ty-kate - fix #6887]
-  * Add support for single-quoted values of the /etc/os-release file [#6886 @kit-ty-kate - fix #6887]
-  * Fix a string injection from the depexts field to nix-build, when `os-family=nixos` [#6894 @RyanGibb]
 
 ## Format upgrade
 
@@ -97,8 +93,6 @@ users)
 ## Shell
 
 ## Internal
-  * Fix a rare potential GC corruption in `OpamStubs.enumRegistry` on Windows [#6882 @kit-ty-kate]
-  * Fix a rare potential GC corruption in `OpamStubs.uname` [#6880 @avsm @kit-ty-kate @andrew]
 
 ## Internal: Unix
 
@@ -110,7 +104,6 @@ users)
 
 ## Reftests
 ### Tests
-  * Add a test showing the behaviour of .install files containing destination filepath trying to escape their scope [#6897 @rjbou @kit-ty-kate]
 
 ### Engine
 
@@ -119,7 +112,6 @@ users)
 ## Doc
 
 ## Security fixes
-  * Invalidate .install fields containing destination filepath trying to escape their scope [#6897 @kit-ty-kate]
 
 # API updates
 ## opam-client
@@ -133,4 +125,3 @@ users)
 ## opam-format
 
 ## opam-core
-  * `OpamFilename.might_escape`: ensure / is detected as a file separator when called with `~sep:Unspecified` on Windows [#6897 @kit-ty-kate]
