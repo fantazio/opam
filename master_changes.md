@@ -61,6 +61,7 @@ users)
 ## Env
 
 ## Opamfile
+  * Filter fields in .install files containing destinations with `..` or absolute filepaths as parse errors [#6897 @kit-ty-kate]
 
 ## External dependencies
   * Restore the distribution detection on Gentoo [#6886 @kit-ty-kate - fix #6887]
@@ -118,6 +119,7 @@ users)
 ## Doc
 
 ## Security fixes
+  * Invalidate .install fields containing destination filepath trying to escape their scope [#6897 @kit-ty-kate]
 
 # API updates
 ## opam-client
