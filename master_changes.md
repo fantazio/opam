@@ -109,6 +109,7 @@ users)
 
 ## Reftests
 ### Tests
+  * Add a test showing the behaviour of .install files containing destination filepath trying to escape their scope [#6897 @rjbou @kit-ty-kate]
 
 ### Engine
 
