@@ -1141,11 +1141,18 @@ let install_packages_commands_t ?(env=OpamVariable.Map.empty) ~to_show st
          OpamFilename.create dir
            (OpamFilename.Base.of_string "env.nix")
        in
-       let packages =
-         String.concat " "
-           (OpamSysPkg.Set.fold (fun p l -> OpamSysPkg.to_string p :: l)
-              OpamSysPkg.Set.Op.(sys_packages.ti_new ++ sys_packages.ti_required) [])
+       let packageFile =
+         OpamFilename.create dir
+           (OpamFilename.Base.of_string "nix-depexts.json")
        in
+       let packages =
+         "[" ^
+         String.concat ", "
+           (OpamSysPkg.Set.fold (fun p l -> ("\"" ^ OpamSysPkg.to_string p ^ "\"") :: l)
+           OpamSysPkg.Set.Op.(sys_packages.ti_new ++ sys_packages.ti_required) [])
+           ^ "]"
+       in
+       OpamFilename.write packageFile packages;
        (* We exclude variables from
             https://github.com/NixOS/nix/blob/e4bda20918ad2af690c2e938211a7d362548e403/src/nix/develop.cc#L308-L325
           append to variables from
@@ -1156,7 +1163,7 @@ let install_packages_commands_t ?(env=OpamVariable.Map.empty) ~to_show st
 with pkgs;
 stdenv.mkDerivation {
   name = "opam-nix-env";
-  nativeBuildInputs = with buildPackages; [ |} ^ packages ^ {| ];
+  nativeBuildInputs = map (name: buildPackages.${name}) (builtins.fromJSON (builtins.readFile ./nix-depexts.json));
 
   phases = [ "buildPhase" ];
 
