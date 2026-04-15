@@ -131,3 +131,4 @@ users)
 ## opam-format
 
 ## opam-core
+  * `OpamFilename.might_escape`: ensure / is detected as a file separator when called with `~sep:Unspecified` on Windows [#6897 @kit-ty-kate]
