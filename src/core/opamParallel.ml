@@ -485,12 +485,6 @@ let flat_graph_of_array a =
 
 exception Errors = IntGraph.Parallel.Errors
 
-let iter ~jobs ~command ?dry_run l =
-  let a = Array.of_list l in
-  let g = flat_graph_of_array a in
-  let command ~pred:_ i = command a.(i) in
-  ignore (IntGraph.Parallel.iter ~jobs ~command ?dry_run g)
-
 let map ~jobs ~command ?dry_run l =
   let a = Array.of_list l in
   let g = flat_graph_of_array a in

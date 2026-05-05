@@ -65,14 +65,7 @@ module type OrderedType = sig
 end
 
 module OpamCompare = struct
-  external compare : 't -> 't -> int = "%compare"
   external equal : 't -> 't -> bool = "%equal"
-  external (=) : 't -> 't -> bool = "%equal"
-  external (<>) : 't -> 't -> bool = "%notequal"
-  external (<) : 't -> 't -> bool = "%lessthan"
-  external (>) : 't -> 't -> bool = "%greaterthan"
-  external (<=) : 't -> 't -> bool = "%lessequal"
-  external (>=) : 't -> 't -> bool = "%greaterequal"
 end
 
 let max_print = 100
@@ -136,13 +129,6 @@ module OpamList = struct
       | Some r -> Some r
       | None -> find_map_opt f r
 
-  let insert comp x l =
-    let rec aux = function
-      | [] -> [x]
-      | h::t when comp h x < 0 -> h::aux t
-      | l -> x :: l in
-    aux l
-
   let rec insert_at index value = function
     | [] -> [value]
     | l when index <= 0 -> value :: l
@@ -181,15 +167,6 @@ module OpamList = struct
   let rec mem_assoc eq x = function
     | [] -> false
     | (a,_)::r -> eq a x || mem_assoc eq x r
-
-  let update_assoc eq k v l =
-    let rec aux acc = function
-      | [] -> List.rev ((k,v)::acc)
-      | (k1,_) as b::r ->
-        if eq k1 k then List.rev_append acc ((k,v)::r)
-        else aux (b::acc) r
-    in
-    aux [] l
 
   let remove_assoc eq k l =
     let rec aux acc = function
@@ -420,10 +397,6 @@ module Option = struct
   let default dft = function
     | None -> dft
     | Some x -> x
-
-  let default_map dft = function
-    | None -> dft
-    | some -> some
 
   let replace f = function
     | None -> None
@@ -1333,29 +1306,7 @@ end
 
 
 module Win32 = struct
-  module RegistryHive = struct
-    let to_string = function
-    | OpamStubs.HKEY_CLASSES_ROOT   -> "HKEY_CLASSES_ROOT"
-    | OpamStubs.HKEY_CURRENT_CONFIG -> "HKEY_CURRENT_CONFIG"
-    | OpamStubs.HKEY_CURRENT_USER   -> "HKEY_CURRENT_USER"
-    | OpamStubs.HKEY_LOCAL_MACHINE  -> "HKEY_LOCAL_MACHINE"
-    | OpamStubs.HKEY_USERS          -> "HKEY_USERS"
-
-    let of_string = function
-    | "HKCR"
-    | "HKEY_CLASSES_ROOT"   -> OpamStubs.HKEY_CLASSES_ROOT
-    | "HKCC"
-    | "HKEY_CURRENT_CONFIG" -> OpamStubs.HKEY_CURRENT_CONFIG
-    | "HKCU"
-    | "HKEY_CURRENT_USER"   -> OpamStubs.HKEY_CURRENT_USER
-    | "HKLM"
-    | "HKEY_LOCAL_MACHINE"  -> OpamStubs.HKEY_LOCAL_MACHINE
-    | "HKU"
-    | "HKEY_USERS"          -> OpamStubs.HKEY_USERS
-    | _                     -> failwith "RegistryHive.of_string"
-  end
-
-  let (set_parent_pid, parent_putenv) =
+  let parent_putenv =
     let ppid = ref (OpamCompat.Lazy.map (function (_::(pid, _)::_) -> pid | _ -> 0l) OpamSys.windows_process_ancestry) in
     let parent_putenv = lazy (
       let {contents = lazy ppid} = ppid in
@@ -1412,11 +1363,7 @@ module Win32 = struct
         function "::QUIT" -> fun _ -> true
         | key -> OpamStubs.process_putenv ppid key)
     in
-      ((fun pid ->
-          if Lazy.is_val parent_putenv then
-            failwith "Target parent already known";
-          ppid := Lazy.from_val pid),
-       (fun key -> (Lazy.force parent_putenv) key))
+    (fun key -> (Lazy.force parent_putenv) key)
 
   let persistHomeDirectory dir =
     (* Update our environment *)
@@ -1742,11 +1689,6 @@ module Config = struct
         | `Extended -> failwith "env_when")
       var
 
-  let resolve_when ~auto = function
-    | `Always -> true
-    | `Never -> false
-    | `Auto -> Lazy.force auto
-
   let answer s =
     match String.lowercase_ascii s with
     | "ask" -> `ask
@@ -1777,7 +1719,6 @@ module Config = struct
     type t += REMOVED
     let (r : t list ref) = ref []
 
-    let update v = r := v :: !r
     let updates l = r := l @ !r
 
     let find var = OpamList.find_map var !r

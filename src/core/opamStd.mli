@@ -141,8 +141,6 @@ module IntSet: SET with type elt = int
 module Option: sig
   val default: 'a -> 'a option -> 'a
 
-  val default_map: 'a option -> 'a option -> 'a option
-
   val replace : ('a -> 'b option) -> 'a option -> 'b option
 
   val map_default: ('a -> 'b) -> 'b -> 'a option -> 'b
@@ -175,9 +173,6 @@ module List : sig
 
   val to_string: ('a -> string) -> 'a list -> string
 
-  (** Removes consecutive duplicates in a list *)
-  val remove_duplicates: ('a -> 'a -> bool) -> 'a list -> 'a list
-
   (** Sorts the list, removing duplicates *)
   val sort_nodup: ('a -> 'a -> int) -> 'a list -> 'a list
 
@@ -192,9 +187,6 @@ module List : sig
   (** Like {!find_map},
   but returns [Some _] if succeeded and [None] if failed. *)
   val find_map_opt: ('a -> 'b option) -> 'a list -> 'b option
-
-  (** Insert a value in an ordered list *)
-  val insert: ('a -> 'a -> int) -> 'a -> 'a list -> 'a list
 
   (** Inserts a value at the given index (starting from 0) in the list (start or
       end if index < 0 or > length respectively). Not tail-recursive *)
@@ -222,12 +214,6 @@ module List : sig
       (tail-recursive). *)
   val remove_assoc:
     ('a -> 'a -> bool) -> 'a -> ('a * 'b) list -> ('a * 'b) list
-
-  (** [update_assoc key value list] updates the first value bound to [key] in
-      the associative list [list], or appends [(key, value)] if the key is not
-      bound. *)
-  val update_assoc:
-    ('a -> 'a -> bool) -> 'a -> 'b -> ('a * 'b) list -> ('a * 'b) list
 
   (** Like {!pick_assoc}, but with a test function that takes a list element *)
   val pick: ('a -> bool) -> 'a list -> 'a option * 'a list
@@ -290,12 +276,6 @@ module String : sig
   (** The same as {!split}, but keep empty strings (leading, trailing or between
       contiguous delimiters) *)
   val split_delim: string -> char -> string list
-
-  (** Splits a variable at the given character, but allowing double-quote
-      characters to protect the delimiter.
-
-      [split_quoted "foo\";\"bar;baz" ';' = ["foo;bar"; "baz"]] *)
-  val split_quoted: string -> char -> string list
 
   val is_hex: string -> bool
 
@@ -616,19 +596,6 @@ end
 
 (** {2 Windows-specific functions} *)
 module Win32 : sig
-  (** Win32 Registry Hives and Values *)
-  module RegistryHive : sig
-    val to_string : OpamStubs.registry_root -> string
-    val of_string : string -> OpamStubs.registry_root
-  end
-
-  val set_parent_pid : int32 -> unit
-  (** Change which the pid written to by {!parent_putenv}. This function cannot
-      be called after {!parent_putenv}. *)
-
-  val parent_putenv : string -> string -> bool
-  (** Update an environment variable in the parent (i.e. shell) process's
-      environment. *)
 
   val persistHomeDirectory : string -> unit
   (** [persistHomeDirectory value] sets the HOME environment variable in this
@@ -685,8 +652,6 @@ module Config : sig
 
   val env_when_ext: env_var -> when_ext option
 
-  val resolve_when: auto:(bool Lazy.t) -> when_ -> bool
-
   val env_answer: env_var -> answer option
 
   val auto_answer: env_var -> (string * answer) list option
@@ -733,12 +698,10 @@ module Config : sig
   module E : sig
     type t = ..
     type t += REMOVED
-    val find: (t -> 'a option) -> 'a
     (* Lazy *)
     val value: (t -> 'a option) -> (unit -> 'a option)
     (* Not lazy *)
     val value_t: (t -> 'a option) -> 'a option
-    val update: t -> unit
     val updates: t list -> unit
   end
 
@@ -748,12 +711,5 @@ end
     We use this module in opam codebase to flag polymorphic comparison usage.
 *)
 module Compare : sig
-  val compare: 'a -> 'a -> int
   val equal: 'a -> 'a -> bool
-  val (=): 'a -> 'a -> bool
-  val (<>): 'a -> 'a -> bool
-  val (<): 'a -> 'a -> bool
-  val (>): 'a -> 'a -> bool
-  val (<=): 'a -> 'a -> bool
-  val (>=): 'a -> 'a -> bool
 end

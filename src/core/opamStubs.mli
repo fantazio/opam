@@ -22,10 +22,6 @@ val getpid : unit -> int
 
       On all other platforms, this is just an alias for {!Unix.getpid}. *)
 
-val getCurrentProcessID : unit -> int32
-  (** Windows only. As {!getpid}, but without the possibility of truncating the
-      ID on 32-bit platforms. *)
-
 val getStdHandle : stdhandle -> handle
   (** Windows only. Return a standard handle. *)
 
@@ -136,11 +132,6 @@ val getProcessAncestry : unit -> (int32 * string) list
     the ancestry list for this process, starting with the process itself. If an
     image name can't be determined, then [""] is returned; on failure, returns
     [[]]. *)
-
-val getConsoleAlias : string -> string -> string
-(** Windows only. [getConsoleAlias alias exeName] retrieves the value for a
-    given executable or [""] if the alias is not defined. See
-    https://docs.microsoft.com/en-us/windows/console/getconsolealias *)
 
 val win_create_process : string -> string -> string option -> Unix.file_descr ->
                          Unix.file_descr -> Unix.file_descr -> int
