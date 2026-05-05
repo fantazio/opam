@@ -138,6 +138,3 @@ let compare (x : string) (y : string) =
     let u_comp = compare_chunks u1 u2 in
     if u_comp <> 0 then normalize_comp_result u_comp
     else normalize_comp_result (compare_chunks r1 r2)
-
-let equal (x : string) (y : string) =
-  if (x : string) = y then true else (compare x y) = 0
