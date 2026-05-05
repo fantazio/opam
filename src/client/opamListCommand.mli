@@ -28,8 +28,6 @@ type dependency_toggles = {
   dev: bool;
 }
 
-val default_dependency_toggles: dependency_toggles
-
 type pattern_selector = {
   case_sensitive: bool;
   exact: bool;
@@ -128,8 +126,6 @@ val raw_field_names: (output_format * string) list
 val field_names: (output_format * string) list
 
 val string_of_field: ?raw:bool -> output_format -> string
-
-val field_of_string: raw:bool -> string -> output_format
 
 type package_listing_format = {
   short: bool;
