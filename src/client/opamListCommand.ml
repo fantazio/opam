@@ -29,17 +29,6 @@ type dependency_toggles = {
   dev: bool;
 }
 
-let default_dependency_toggles = {
-  recursive = false;
-  depopts = false;
-  build = true;
-  post = false;
-  test = false;
-  dev_setup = false;
-  doc = false;
-  dev = false;
-}
-
 type pattern_selector = {
   case_sensitive: bool;
   exact: bool;
