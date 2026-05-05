@@ -12,7 +12,6 @@ include OpamStubsTypes
 
 let that's_a_no_no _ = failwith "Windows only. This function isn't implemented."
 
-let getCurrentProcessID = that's_a_no_no
 let getpid = Unix.getpid
 let getStdHandle = that's_a_no_no
 let getConsoleScreenBufferInfo = that's_a_no_no
@@ -38,7 +37,6 @@ let getPathToSystem = that's_a_no_no
 let getPathToLocalAppData = that's_a_no_no
 let sendMessageTimeout _ _ _ _ _ = that's_a_no_no
 let getProcessAncestry = that's_a_no_no
-let getConsoleAlias _ = that's_a_no_no
 let win_create_process _ _ _ _ _ = that's_a_no_no
 let getConsoleWindowClass = that's_a_no_no
 let setErrorMode = that's_a_no_no

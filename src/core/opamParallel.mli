@@ -39,9 +39,6 @@ exception Aborted
     which raised exceptions, and third one those which were canceled. *)
 exception Errors of int list * (int * exn) list * int list
 
-val iter: jobs:int -> command:('a -> unit OpamProcess.job) -> ?dry_run:bool ->
-  'a list -> unit
-
 val map: jobs:int -> command:('a -> 'b OpamProcess.job) -> ?dry_run:bool ->
   'a list -> 'b list
 
