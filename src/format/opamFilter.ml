@@ -152,15 +152,6 @@ let variables filter =
 
 (* Some cast functions on values *)
 
-let value ?default = function
-  | FBool b -> B b
-  | FString s -> S s
-  | FUndef f ->
-    (match default with
-     | Some d -> d
-     | None -> failwith ("Undefined filter value: "^to_string f))
-  | e -> raise (Invalid_argument ("filter value: "^to_string e))
-
 let value_string ?default = function
   | FBool b -> string_of_bool b
   | FString s -> s
@@ -392,8 +383,6 @@ and reduce ?no_undef_expand ?(default_str = Some (fun _ -> "")) env e =
      with Failure _ -> FUndef (FString (expand_string ~partial:true env s)))
   | e -> e
 
-let eval ?default env e = value ?default (reduce env e)
-
 let eval_to_bool ?default env e = value_bool ?default (reduce env e)
 
 let opt_eval_to_bool env opt =
@@ -418,11 +407,7 @@ let ident_of_var v =
 let ident_of_string s =
   ident_of_var (OpamVariable.Full.of_string s)
 
-let ident_value ?default env id = value ?default (resolve_ident env id)
-
 let ident_string ?default env id = value_string ?default (resolve_ident env id)
-
-let ident_bool ?default env id = value_bool ?default (resolve_ident env id)
 
 (* Substitute the file contents and specify the source and destination *)
 let expand_interpolations_in_file_full env ~src ~dst =

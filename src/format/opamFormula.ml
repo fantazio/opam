@@ -97,26 +97,9 @@ let string_of_conjunction string_of_atom c =
 
 type 'a disjunction = 'a list
 
-let string_of_disjunction string_of_atom c =
-  Printf.sprintf "(%s)" (OpamStd.List.concat_map " | " string_of_atom c)
-
 type 'a cnf = 'a list list
 
-let string_of_cnf string_of_atom cnf =
-  let string_of_clause c =
-    let left, right = match c with [_] -> "", "" | _ -> "(", ")" in
-    OpamStd.List.concat_map ~left ~right " | " string_of_atom c
-  in
-  OpamStd.List.concat_map " & " string_of_clause cnf
-
 type 'a dnf = 'a list list
-
-let string_of_dnf string_of_atom cnf =
-  let string_of_clause c =
-    let left, right = match c with [_] -> "", "" | _ -> "(", ")" in
-    OpamStd.List.concat_map ~left ~right " & " string_of_atom c
-  in
-  OpamStd.List.concat_map " | " string_of_clause cnf
 
 type 'a formula =
   | Empty
@@ -190,13 +173,6 @@ let neg neg_atom =
       | Or(x,y) -> And(x,y)
       | Atom x -> Atom (neg_atom x)
       | x -> x)
-
-let rec iter f = function
-  | Empty    -> ()
-  | Atom x   -> f x
-  | Block x  -> iter f x
-  | And(x,y) -> iter f x; iter f y
-  | Or(x,y)  -> iter f x; iter f y
 
 let rec fold_left f i = function
   | Empty    -> i
@@ -459,9 +435,6 @@ and rev_ands_to_list = function
     List.rev_append (ands_to_list f) (rev_ands_to_list e)
   | x -> [x]
 
-let of_conjunction c =
-  of_atom_formula (ands (List.rev_map (fun x -> Atom x) c))
-
 let ors l = List.fold_left make_or Empty l
 
 let rec ors_to_list = function
@@ -532,17 +505,6 @@ let formula_to_dnf t =
     List.rev_map atoms @@ rev_ors_to_list @@ dnf_of_formula t
 
 let to_dnf t = formula_to_dnf @@ to_atom_formula t
-
-let to_conjunction t =
-  if is_conjunction t then atoms t
-  else failwith (Printf.sprintf "%s is not a valid conjunction" (to_string t))
-
-let to_disjunction t =
-  if is_disjunction t then atoms t
-  else failwith (Printf.sprintf "%s is not a valid disjunction" (to_string t))
-
-let of_disjunction d =
-  of_atom_formula (ors (List.rev_map (fun x -> Atom x) d))
 
 let get_disjunction_formula version_set cstr =
   (* rev_ors_to_list cstr |>
