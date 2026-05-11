@@ -62,11 +62,6 @@ let status_empty =
     s_not_found  = Set.empty;
   }
 
-let string_of_status sp =
-  Printf.sprintf "available: %s; not_found: %s"
-    (Set.to_string sp.s_available)
-    (Set.to_string sp.s_not_found)
-
 (** System packages to install *)
 
 type to_install = {
@@ -81,8 +76,3 @@ let to_install_empty = {
   ti_new  = Set.empty;
   ti_required  = Set.empty;
 }
-
-let string_of_to_install ti =
-  Printf.sprintf "new: %s; required: %s"
-    (Set.to_string ti.ti_new)
-    (Set.to_string ti.ti_required)

@@ -136,14 +136,6 @@ module V = struct
          | _ -> [v])
       (fun l -> nullify_pos (List (nullify_pos l)))
 
-  let group =
-    pp ~name:"group" ~name_constr:(Printf.sprintf "(%s)")
-      (fun ~pos:_ v ->
-         match v.pelem with
-         | Group l -> l.pelem
-         | _ -> [v])
-      (fun l -> nullify_pos (Group (nullify_pos l)))
-
   let option =
     pp ~name:"option"
       (fun ~pos:_ v ->
@@ -161,8 +153,6 @@ module V = struct
          | Option (k,l) -> k, l.pelem
          | _ -> bad_format ~pos "Expected an option")
       (function (v, l) -> nullify_pos (Option (v, nullify_pos l)))
-
-  let map_group pp1 = group -| map_list ~posf:value_pos pp1
 
   let list_depth expected_depth =
     let rec depth v =
@@ -476,9 +466,6 @@ module V = struct
 
   let pkgname =
     string -| of_module "pkg-name" (module OpamPackage.Name)
-
-  let package_atom constraints =
-    map_option pkgname constraints
 
   (* These two functions are duplicated from [OpamFormula] but we need to have a
      it here because of a change on [Block] handling: to have a coherent
@@ -885,14 +872,6 @@ module I = struct
       snd
 
 
-  let extract_field name =
-    partition_fields ((=) name) -|
-    (map_fst @@ opt @@
-     singleton -| item -|
-     pp ~name:(Printf.sprintf "'%s:' field" name)
-       (fun ~pos:_ (_,v) -> v)
-       (fun v -> name,v))
-
   let check_opam_version
       ?(optional=false)
       ~format_version
@@ -947,31 +926,4 @@ module I = struct
            in
            opam_v :: items
          | Some _, items -> items)
-
-  type signature = string * string * string
-
-  let signature =
-    V.list -| (V.string ^+ V.string ^+ last -| V.string) -|
-    pp (fun ~pos:_ (a,(b,c)) -> a,b,c) (fun (a,b,c) -> a,(b,c))
-
-  exception Invalid_signature of pos * (string*string*string) list option
-
-  let signed ~check =
-    let module OpamPrinter = OpamPrinter.FullPos in
-    let pp_sig = V.map_list ~depth:2 signature in
-    extract_field "signature" -|
-    pp ~name:"signed-file"
-      (fun ~pos -> function
-         | Some sgs, items ->
-           let sgs = parse ~pos pp_sig sgs in
-           let str = OpamPrinter.Normalise.items items in
-           if not (check sgs str) then
-             raise (Invalid_signature (pos, Some sgs))
-           else (sgs, items)
-         | None, _ ->
-           raise (Invalid_signature (pos, None)))
-      (fun (sgs, items) ->
-         assert (check sgs (OpamPrinter.Normalise.items items));
-         Some (print pp_sig sgs),
-         items)
 end
