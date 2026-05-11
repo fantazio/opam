@@ -1738,7 +1738,6 @@ module InitConfigSyntax = struct
   let with_dl_tool dl_tool t = {t with dl_tool}
   let with_dl_jobs dl_jobs t = {t with dl_jobs}
   let with_dl_cache dl_cache t = {t with dl_cache = Some dl_cache}
-  let with_solver_criteria solver_criteria t = {t with solver_criteria}
   let with_solver solver t = {t with solver}
   let with_wrappers wrappers t = {t with wrappers}
   let with_global_variables global_variables t = {t with global_variables}
@@ -2296,8 +2295,6 @@ module Dot_configSyntax = struct
       (fun t -> None, Pp.print pp_contents t)
 
 
-  let variables t = List.rev_map fst t.vars
-
   let bindings t = t.vars
 
   let variable t s =
@@ -2365,7 +2362,6 @@ module RepoSyntax = struct
   let with_dl_cache dl_cache t = { t with dl_cache = Some dl_cache }
   let with_announce announce t = { t with announce }
   let with_stamp id t = { t with stamp = Some id }
-  let with_stamp_opt stamp t = { t with stamp }
 
   let fields = [
     "opam-version", Pp.ppacc_opt
@@ -2449,7 +2445,6 @@ module URLSyntax = struct
   let with_url url t = { t with url }
   let with_mirrors mirrors t = { t with mirrors }
   let with_checksum checksum t = { t with checksum = checksum }
-  let with_swhid swhid t = { t with swhid = Some swhid }
   let with_swhid_opt swhid t = { t with swhid = swhid }
   let with_subpath subpath t = { t with subpath = Some subpath }
   let with_subpath_opt subpath t = { t with subpath = subpath }
@@ -2743,13 +2738,6 @@ module OPAMSyntax = struct
   let bug_reports t = t.bug_reports
 
   let extensions t = t.extensions
-  let extended t fld parse =
-    if not (is_ext_field fld) then invalid_arg "OpamFile.OPAM.extended";
-    try
-      let s = OpamStd.String.Map.find fld t.extensions in
-      (try Some (parse s) with
-       | Pp.Bad_format _ as e -> raise (Pp.add_pos s.pos e))
-    with Not_found -> None
 
   let url t = t.url
   let descr t = t.descr
@@ -2773,7 +2761,6 @@ module OPAMSyntax = struct
   let with_name name (t:t) = { t with name = Some name }
   let with_name_opt name (t:t) = { t with name }
   let with_version version (t:t) = { t with version = Some version }
-  let with_version_opt version (t:t) = { t with version }
   let with_nv nv (t:t) =
     { t with name = Some (nv.OpamPackage.name);
              version = Some (nv.OpamPackage.version) }
@@ -2848,7 +2835,6 @@ module OPAMSyntax = struct
              format_errors = format_errors @ t.format_errors }
 
   let with_descr descr t = { t with descr = Some descr }
-  let with_descr_opt descr t = { t with descr }
   let with_synopsis synopsis t =
     { t with descr =
                Some (synopsis, OpamStd.Option.default "" (descr_body t)) }
@@ -3428,8 +3414,6 @@ module OPAMSyntax = struct
     in
     OpamFilename.write filename s
 
-  let contents = Syntax.contents pp
-
   let to_list = Syntax.to_list pp
 
   let print_field_as_syntax field t =
@@ -3964,11 +3948,6 @@ module CompSyntax = struct
     env       = [];
     tags      = [];
   }
-
-  let create_preinstalled name version packages env =
-    let mk n = Atom (n, Empty) in
-    let packages = OpamFormula.ands (List.map mk packages) in
-    { empty with name; version; preinstalled = true; packages; env }
 
   let name (t:t) = t.name
   let version (t:t) = t.version
