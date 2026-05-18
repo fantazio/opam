@@ -66,12 +66,6 @@ val load_opams_from_diff:
   repository -> Patch.operation list -> 'a repos_state
   -> OpamFile.OPAM.t package_map
 
-(** Load all the metadata within the local mirror of the given repository,
-    without cache *)
-val load_repo:
-  repository -> OpamFilename.Dir.t ->
-  OpamFile.Repo.t * OpamFile.OPAM.t OpamPackage.Map.t
-
 (** Get the (lazily extracted) repository root for the given repository *)
 val get_root: 'a repos_state -> repository_name -> OpamFilename.Dir.t
 
@@ -112,10 +106,6 @@ val drop: ?cleanup:bool -> 'a repos_state -> unit
 
 (** Cleanup before removing the repository from temporary table *)
 val remove_from_repos_tmp: 'a repos_state -> repository_name -> unit
-
-(** Clears tmp files corresponding to a repo state (uncompressed repository
-    contents) *)
-val cleanup: 'a repos_state -> unit
 
 (** Calls the provided function, ensuring a temporary write lock on the given
     repository state*)
