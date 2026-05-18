@@ -57,12 +57,6 @@ module Remote = struct
   (** URL, not FS paths *)
   open OpamUrl.Op
 
-  let repo root_url =
-    root_url / "repo"
-
   let packages_url root_url =
     root_url / "packages"
-
-  let archive root_url nv =
-    root_url / "archives" / (OpamPackage.to_string nv ^ "+opam.tar.gz")
 end

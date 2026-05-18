@@ -54,12 +54,6 @@ val files: dirname -> string option -> package -> dirname
 (** Url constructor for parts of remote repositories, when applicable (http and
     rsync). Function take the repo's root url. *)
 module Remote: sig
-  (** Remote repo file *)
-  val repo: url -> url
-
   (** Remote package files: {i $remote/packages} *)
   val packages_url: url -> url
-
-  (** Remote archive {i $remote/archives/$NAME.$VERSION.tar.gz} *)
-  val archive: url -> package -> url
 end
