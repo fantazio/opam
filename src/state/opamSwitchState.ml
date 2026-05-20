@@ -956,7 +956,7 @@ let universe st
     ?(force_dev_deps=false)
     ?reinstall
     ~requested
-    user_action =
+    _user_action =
   let chrono = OpamConsole.timer () in
   let names = OpamPackage.names_of_packages requested in
   let requested_allpkgs =
@@ -1039,7 +1039,6 @@ let universe st
   let u =
 {
   u_packages  = st.packages;
-  u_action = user_action;
   u_installed = st.installed;
   u_available;
   u_depends;
